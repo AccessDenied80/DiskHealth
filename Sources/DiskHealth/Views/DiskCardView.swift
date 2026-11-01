@@ -32,7 +32,10 @@ struct DiskCardView: View {
                 }
             }
 
-            if disk.smartAvailable {
+            if disk.smartAvailable && disk.temperatureC == nil && disk.bytesWritten == nil && disk.powerOnHours == nil {
+                Text("SMART \(disk.smartPassed == false ? "FAILED" : "PASSED") · міст USB не передає детальних показників")
+                    .font(.caption).foregroundStyle(.secondary)
+            } else if disk.smartAvailable {
                 HStack(spacing: 16) {
                     stat("thermometer.medium", Format.temperature(disk.temperatureC))
                     stat("square.and.arrow.down", Format.bytes(disk.bytesWritten))

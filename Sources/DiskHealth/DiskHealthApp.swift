@@ -11,6 +11,12 @@ struct DiskHealthApp: App {
         let model = AppModel(settings: settings)
         _settings = StateObject(wrappedValue: settings)
         _model = StateObject(wrappedValue: model)
+        #if DEBUG
+        if let dir = Snapshot.outputDir {
+            Snapshot.run(model: model, settings: settings, to: dir)
+            return
+        }
+        #endif
         model.start()
     }
 

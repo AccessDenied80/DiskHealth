@@ -7,32 +7,48 @@ struct DiskDetailView: View {
     let disk: DiskInfo
     let report: HealthReport?
     let onBack: () -> Void
+    /// `false` лише для рендеру в PNG: ImageRenderer не малює вміст ScrollView.
+    var scrollable = true
 
     var body: some View {
-        VStack(spacing: 0) {
-            HStack {
-                Button(action: onBack) { Label("Назад", systemImage: "chevron.left") }
-                    .buttonStyle(.borderless)
-                Spacer()
-                Text(disk.model).font(.headline).lineLimit(1)
-                Spacer()
+        if scrollable {
+            VStack(spacing: 0) {
+                topBar
+                Divider()
+                ScrollView { details }
             }
-            .padding(12)
-            Divider()
-            ScrollView {
-                VStack(alignment: .leading, spacing: 14) {
-                    status
-                    attributes
-                    charts
-                    if !disk.messages.isEmpty {
-                        section("Повідомлення smartctl") {
-                            ForEach(disk.messages, id: \.self) { Text($0).font(.caption).foregroundStyle(.secondary) }
-                        }
-                    }
-                }
-                .padding(12)
+        } else {
+            VStack(spacing: 0) {
+                topBar
+                Divider()
+                details
             }
         }
+    }
+
+    private var topBar: some View {
+        HStack {
+            Button(action: onBack) { Label("Назад", systemImage: "chevron.left") }
+                .buttonStyle(.borderless)
+            Spacer()
+            Text(disk.model).font(.headline).lineLimit(1)
+            Spacer()
+        }
+        .padding(12)
+    }
+
+    private var details: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            status
+            attributes
+            charts
+            if !disk.messages.isEmpty {
+                section("Повідомлення smartctl") {
+                    ForEach(disk.messages, id: \.self) { Text($0).font(.caption).foregroundStyle(.secondary) }
+                }
+            }
+        }
+        .padding(12)
     }
 
     private var status: some View {

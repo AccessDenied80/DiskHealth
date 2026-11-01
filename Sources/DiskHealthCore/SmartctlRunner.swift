@@ -47,16 +47,33 @@ public struct SmartctlRunner: Sendable {
     }
 
     public func read(_ dev: ScannedDevice) async throws -> DiskInfo {
+        let info = try await read(dev, permissive: false)
+        // USB-мости часто не заявляють підтримку SMART в IDENTIFY, хоча команди виконують.
+        if !info.smartAvailable, ["ata", "sat"].contains(dev.type),
+           let retry = try? await read(dev, permissive: true), retry.smartAvailable {
+            return retry
+        }
+        return info
+    }
+
+    private func read(_ dev: ScannedDevice, permissive: Bool) async throws -> DiskInfo {
         var args = ["-x", "--json=c"]
+        if permissive { args += ["-T", "permissive"] }
         if !dev.type.isEmpty, dev.type != "auto" { args += ["-d", dev.type] }
         args.append(dev.name)
         let (out, code) = try await run(args)
         // Код виходу smartctl — бітова маска: ненульовий код із валідним JSON — це нормальні дані.
+        var info: DiskInfo
         do {
-            return try SmartParser.parseDisk(out)
+            info = try SmartParser.parseDisk(out)
         } catch {
             throw failure(device: dev.name, exitStatus: code)
         }
+        if let media = IOKitLookup.wholeMedia(forServicePath: info.deviceName) {
+            info.deviceName = "/dev/\(media.bsdName)"
+            info.capacityBytes = info.capacityBytes ?? media.sizeBytes
+        }
+        return info
     }
 
     public func readAll() async -> (disks: [DiskInfo], errors: [String]) {

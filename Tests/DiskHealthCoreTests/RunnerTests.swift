@@ -37,6 +37,22 @@ import Testing
         await #expect(throws: SmartctlError.noData(device: "/dev/disk0", exitStatus: 2)) { try await r.read(dev) }
     }
 
+    @Test func ataWithoutSmartRetriesPermissive() async throws {
+        let usb = try #require(Bundle.module.url(forResource: "usb_nosmart", withExtension: "json", subdirectory: "Fixtures"))
+        let sata = try #require(Bundle.module.url(forResource: "sata_ssd", withExtension: "json", subdirectory: "Fixtures"))
+        let url = try fakeSmartctl(printing: nil, exit: 0)
+        // Без -T permissive міст «не має» SMART; з ним — віддає дані.
+        let script = """
+        #!/bin/sh
+        case "$*" in *permissive*) cat '\(sata.path)'; exit 4 ;; *) cat '\(usb.path)'; exit 4 ;; esac
+        """
+        try script.write(to: url, atomically: true, encoding: .utf8)
+        let r = SmartctlRunner(executable: url)
+        let d = try await r.read(ScannedDevice(name: "/dev/disk5", type: "ata", proto: "ATA"))
+        #expect(d.smartAvailable)
+        #expect(d.smartPassed == true)
+    }
+
     @Test func readAllCollectsDisksAndErrors() async throws {
         let r = SmartctlRunner(executable: try fakeSmartctl(printing: "scan", exit: 0))
         // Скрипт друкує scan.json на будь-який виклик: сканування вдасться, читання дисків — ні.
