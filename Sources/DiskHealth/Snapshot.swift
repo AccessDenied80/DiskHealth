@@ -22,6 +22,7 @@ enum Snapshot {
                 let detail = DiskDetailView(disk: disk, report: model.reports[disk.id], onBack: {})
                     .frame(width: 400)
                     .environmentObject(model)
+                    .environmentObject(settings)
                 await writeWindow(host(detail), "detail-\(i)", dir)
             }
             await writeWindow(SettingsWindow.make(settings: settings), "settings", dir)

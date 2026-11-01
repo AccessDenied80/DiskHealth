@@ -26,9 +26,12 @@ struct SettingsView: View {
             Section("Notifications") {
                 Toggle("Show system notifications", isOn: $settings.notificationsEnabled)
             }
+            Section("Advanced") {
+                Toggle("Show smartctl messages in disk details", isOn: $settings.showSmartctlMessages)
+            }
         }
         .formStyle(.grouped)
         // Згрупована Form не має власної висоти: без явного розміру вікно стискається до нуля.
-        .frame(width: 460, height: 440)
+        .frame(width: 460, height: 520)
     }
 }

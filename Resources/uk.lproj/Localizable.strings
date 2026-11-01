@@ -63,6 +63,8 @@
 "Temperature: %lld °C" = "Температура: %lld °C";
 "Notifications" = "Сповіщення";
 "Show system notifications" = "Показувати системні сповіщення";
+"Advanced" = "Додатково";
+"Show smartctl messages in disk details" = "Показувати повідомлення smartctl у деталях диска";
 
 /* Причини стану */
 "SMART unavailable" = "SMART недоступний";

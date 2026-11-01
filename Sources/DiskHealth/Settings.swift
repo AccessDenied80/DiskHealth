@@ -9,6 +9,8 @@ final class AppSettings: ObservableObject {
     @AppStorage("wearCritical") var wearCritical = 90
     @AppStorage("temperatureWarning") var temperatureWarning = 60
     @AppStorage("notificationsEnabled") var notificationsEnabled = true
+    /// Технічні повідомлення smartctl у деталях диска — для діагностики, тому вимкнено за замовчуванням.
+    @AppStorage("showSmartctlMessages") var showSmartctlMessages = false
 
     var thresholds: Thresholds {
         var t = Thresholds()

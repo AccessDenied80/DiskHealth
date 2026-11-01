@@ -4,6 +4,7 @@ import SwiftUI
 
 struct DiskDetailView: View {
     @EnvironmentObject private var model: AppModel
+    @EnvironmentObject private var settings: AppSettings
     let disk: DiskInfo
     let report: HealthReport?
     let onBack: () -> Void
@@ -38,7 +39,7 @@ struct DiskDetailView: View {
             status
             attributes
             charts
-            if !disk.messages.isEmpty {
+            if settings.showSmartctlMessages && !disk.messages.isEmpty {
                 section("smartctl messages") {
                     ForEach(disk.messages, id: \.self) { Text($0).font(.caption).foregroundStyle(.secondary) }
                 }
