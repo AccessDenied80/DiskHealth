@@ -1,0 +1,1 @@
+{"smartctl": {"version": [7, 5], "exit_status": 0}, "devices": [{"name": "/dev/disk0", "info_name": "/dev/disk0", "type": "nvme", "protocol": "NVMe"}, {"name": "/dev/disk4", "info_name": "/dev/disk4 [SAT]", "type": "sat", "protocol": "ATA"}]}

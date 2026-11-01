@@ -1,0 +1,6 @@
+{
+  "smartctl": {"version": [7, 5], "messages": [{"string": "/dev/disk5: Unable to detect device type", "severity": "error"}], "exit_status": 1},
+  "device": {"name": "/dev/disk5", "info_name": "/dev/disk5", "type": "scsi", "protocol": "SCSI"},
+  "model_name": "USB Flash",
+  "smart_support": {"available": false}
+}
