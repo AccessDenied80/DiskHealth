@@ -24,11 +24,11 @@ public enum AlertEngine {
 
             // Умови-стани: сповіщаємо при вході в стан, забуваємо при виході.
             let conditions: [(key: String, on: Bool, critical: Bool, body: String)] = [
-                ("smartFailed", d.smartPassed == false, true, "SMART-статус: FAILED. Терміново зробіть резервну копію."),
-                ("criticalWarning", (d.criticalWarning ?? 0) != 0, true, "NVMe critical warning: \(d.criticalWarning ?? 0)."),
-                ("wear\(t.wearWarning)", (d.wearPercent ?? 0) >= t.wearWarning, false, "Знос досяг \(d.wearPercent ?? 0)% (поріг \(t.wearWarning)%)."),
-                ("wear\(t.wearCritical)", (d.wearPercent ?? 0) >= t.wearCritical, true, "Знос досяг \(d.wearPercent ?? 0)% (критичний поріг \(t.wearCritical)%)."),
-                ("temp", (d.temperatureC ?? 0) >= t.temperatureWarning, false, "Температура \(d.temperatureC ?? 0) °C (поріг \(t.temperatureWarning) °C)."),
+                ("smartFailed", d.smartPassed == false, true, String(localized: "SMART status: FAILED. Back up your data now.")),
+                ("criticalWarning", (d.criticalWarning ?? 0) != 0, true, String(localized: "NVMe critical warning: \(d.criticalWarning ?? 0).")),
+                ("wear\(t.wearWarning)", (d.wearPercent ?? 0) >= t.wearWarning, false, String(localized: "Wear reached \(d.wearPercent ?? 0)% (threshold \(t.wearWarning)%).")),
+                ("wear\(t.wearCritical)", (d.wearPercent ?? 0) >= t.wearCritical, true, String(localized: "Wear reached \(d.wearPercent ?? 0)% (critical threshold \(t.wearCritical)%).")),
+                ("temp", (d.temperatureC ?? 0) >= t.temperatureWarning, false, String(localized: "Temperature \(d.temperatureC ?? 0) °C (threshold \(t.temperatureWarning) °C).")),
             ]
             // Ключі зносу містять поріг: після зміни порогів старі ключі прибираємо, інакше вони «залипнуть».
             let currentKeys = Set(conditions.map { "\(d.id)|\($0.key)" })
@@ -47,10 +47,10 @@ public enum AlertEngine {
 
             // Лічильники: сповіщаємо, коли значення зросло.
             let counters: [(name: String, value: Int?, label: String, firstSightAlerts: Bool, critical: Bool)] = [
-                ("mediaErrors", d.mediaErrors, "Помилки носія", true, true),
-                ("reallocatedSectors", d.reallocatedSectors, "Перепризначені сектори", true, false),
-                ("pendingSectors", d.pendingSectors, "Нестабільні сектори", true, false),
-                ("crcErrors", d.crcErrors, "Помилки CRC", false, false),
+                ("mediaErrors", d.mediaErrors, String(localized: "Media errors"), true, true),
+                ("reallocatedSectors", d.reallocatedSectors, String(localized: "Reallocated sectors"), true, false),
+                ("pendingSectors", d.pendingSectors, String(localized: "Pending sectors"), true, false),
+                ("crcErrors", d.crcErrors, String(localized: "CRC errors"), false, false),
             ]
             var stored = state.lastCounters[d.id] ?? [:]
             for c in counters {

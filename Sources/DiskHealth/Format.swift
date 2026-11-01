@@ -11,7 +11,7 @@ enum Format {
 
     static func hours(_ h: Int?) -> String {
         guard let h else { return "—" }
-        return "\(h) год (≈ \(h / 24) дн)"
+        return String(localized: "\(h) h (≈ \(h / 24) days)")
     }
 
     static func number(_ n: Int?) -> String { n.map(String.init) ?? "—" }
@@ -33,10 +33,10 @@ extension HealthLevel {
 
     var title: String {
         switch self {
-        case .unknown: "Невідомо"
-        case .ok: "Усе гаразд"
-        case .warning: "Потребує уваги"
-        case .critical: "Критичний стан"
+        case .unknown: String(localized: "Unknown")
+        case .ok: String(localized: "All good")
+        case .warning: String(localized: "Needs attention")
+        case .critical: String(localized: "Critical")
         }
     }
 

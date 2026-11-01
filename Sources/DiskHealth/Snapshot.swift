@@ -2,8 +2,9 @@
 import AppKit
 import SwiftUI
 
-/// `DiskHealth --snapshot <dir>`: опитує диски, рендерить список і деталі першого диска в PNG і завершується.
-/// Лише для перевірки вигляду без доступу до екрана.
+/// `DiskHealth --snapshot <dir>`: опитує диски, рендерить список, деталі кожного диска й налаштування
+/// в PNG і завершується. Лише для перевірки вигляду без доступу до екрана.
+/// Мову можна задати як для будь-якого застосунку: `-AppleLanguages '(uk)'`.
 enum Snapshot {
     static var outputDir: URL? {
         let args = CommandLine.arguments
@@ -16,48 +17,44 @@ enum Snapshot {
         Task { @MainActor in
             await model.refresh()
             try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
-            write(
-                VStack(spacing: 8) {
-                    ForEach(model.disks) { DiskCardView(disk: $0, report: model.reports[$0.id]) }
-                }
-                .padding(12)
-                .frame(width: 400),
-                "list", dir
-            )
-            if let disk = model.disks.first {
-                write(
-                    DiskDetailView(disk: disk, report: model.reports[disk.id], onBack: {}, scrollable: false)
-                        .frame(width: 400)
-                        .environmentObject(model),
-                    "detail", dir
-                )
+            await writeWindow(host(DiskListView().environmentObject(model).environmentObject(settings)), "list", dir)
+            for (i, disk) in model.disks.enumerated() {
+                let detail = DiskDetailView(disk: disk, report: model.reports[disk.id], onBack: {})
+                    .frame(width: 400)
+                    .environmentObject(model)
+                await writeWindow(host(detail), "detail-\(i)", dir)
             }
-            writeWindow(SettingsWindow.make(settings: settings), "settings", dir)
+            await writeWindow(SettingsWindow.make(settings: settings), "settings", dir)
             exit(0)
         }
     }
 
-    /// Рендер справжнього вікна AppKit — так видно Form і контроли, які ImageRenderer не малює.
     @MainActor
-    private static func writeWindow(_ window: NSWindow, _ name: String, _ dir: URL) {
+    private static func host(_ view: some View) -> NSWindow {
+        // Вікно поза екраном не малює власного фону, тож додаємо його явно.
+        let hosting = NSHostingController(rootView: view.background(Color(nsColor: .windowBackgroundColor)))
+        hosting.sizingOptions = [.preferredContentSize]
+        return NSWindow(contentViewController: hosting)
+    }
+
+    /// Рендер справжнього вікна AppKit — так видно Form, ScrollView і контроли, які ImageRenderer не малює.
+    /// Кілька проходів макета: FittedScrollView дізнається висоту вмісту лише після першого.
+    @MainActor
+    private static func writeWindow(_ window: NSWindow, _ name: String, _ dir: URL) async {
         guard let view = window.contentView else { return }
+        for _ in 0..<3 {
+            view.layoutSubtreeIfNeeded()
+            if let fitting = window.contentViewController?.view.fittingSize, fitting.height > 1 {
+                window.setContentSize(fitting)
+            }
+            try? await Task.sleep(nanoseconds: 150_000_000)
+        }
         view.layoutSubtreeIfNeeded()
         NSLog("DiskHealth snapshot %@: window content size %@", name, String(describing: view.bounds.size))
         guard view.bounds.width > 0, view.bounds.height > 0,
               let rep = view.bitmapImageRepForCachingDisplay(in: view.bounds) else { return }
         view.cacheDisplay(in: view.bounds, to: rep)
         try? rep.representation(using: .png, properties: [:])?.write(to: dir.appendingPathComponent("\(name).png"))
-    }
-
-    @MainActor
-    private static func write(_ view: some View, _ name: String, _ dir: URL) {
-        let renderer = ImageRenderer(content: view.background(Color(nsColor: .windowBackgroundColor)))
-        renderer.scale = 2
-        guard let image = renderer.nsImage,
-              let tiff = image.tiffRepresentation,
-              let png = NSBitmapImageRep(data: tiff)?.representation(using: .png, properties: [:])
-        else { return }
-        try? png.write(to: dir.appendingPathComponent("\(name).png"))
     }
 }
 #endif

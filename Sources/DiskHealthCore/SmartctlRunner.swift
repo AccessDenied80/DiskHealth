@@ -9,9 +9,9 @@ public enum SmartctlError: Error, Equatable, Sendable {
 extension SmartctlError: LocalizedError {
     public var errorDescription: String? {
         switch self {
-        case .notFound(let path): "smartctl не знайдено: \(path)"
-        case .noData(let device, let code): "\(device): smartctl не повернув даних (код \(code))"
-        case .badOutput(let what): "Некоректна відповідь smartctl: \(what)"
+        case .notFound(let path): String(localized: "smartctl not found: \(path)")
+        case .noData(let device, let code): String(localized: "\(device): smartctl returned no data (code \(Int(code)))")
+        case .badOutput(let what): String(localized: "Invalid smartctl output: \(what)")
         }
     }
 }

@@ -5,26 +5,26 @@ struct SettingsView: View {
 
     var body: some View {
         Form {
-            Section("Опитування") {
-                Picker("Інтервал", selection: $settings.pollMinutes) {
-                    Text("5 хв").tag(5)
-                    Text("15 хв").tag(15)
-                    Text("30 хв").tag(30)
-                    Text("1 год").tag(60)
-                    Text("3 год").tag(180)
+            Section("Polling") {
+                Picker("Interval", selection: $settings.pollMinutes) {
+                    Text("5 min").tag(5)
+                    Text("15 min").tag(15)
+                    Text("30 min").tag(30)
+                    Text("1 hour").tag(60)
+                    Text("3 hours").tag(180)
                 }
-                Toggle("Запускати при вході в систему", isOn: Binding(
+                Toggle("Launch at login", isOn: Binding(
                     get: { settings.launchAtLogin },
                     set: { settings.launchAtLogin = $0 }
                 ))
             }
-            Section("Пороги попереджень") {
-                Stepper("Знос — увага: \(settings.wearWarning)%", value: $settings.wearWarning, in: 10...100, step: 5)
-                Stepper("Знос — критично: \(settings.wearCritical)%", value: $settings.wearCritical, in: 10...100, step: 5)
-                Stepper("Температура: \(settings.temperatureWarning) °C", value: $settings.temperatureWarning, in: 40...90, step: 5)
+            Section("Warning thresholds") {
+                Stepper("Wear — warning: \(settings.wearWarning)%", value: $settings.wearWarning, in: 10...100, step: 5)
+                Stepper("Wear — critical: \(settings.wearCritical)%", value: $settings.wearCritical, in: 10...100, step: 5)
+                Stepper("Temperature: \(settings.temperatureWarning) °C", value: $settings.temperatureWarning, in: 40...90, step: 5)
             }
-            Section("Сповіщення") {
-                Toggle("Показувати системні сповіщення", isOn: $settings.notificationsEnabled)
+            Section("Notifications") {
+                Toggle("Show system notifications", isOn: $settings.notificationsEnabled)
             }
         }
         .formStyle(.grouped)

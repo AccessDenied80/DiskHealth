@@ -19,7 +19,12 @@
     <key>CFBundleVersion</key>
     <string>1</string>
     <key>CFBundleDevelopmentRegion</key>
-    <string>uk</string>
+    <string>en</string>
+    <key>CFBundleLocalizations</key>
+    <array>
+        <string>en</string>
+        <string>uk</string>
+    </array>
     <key>LSMinimumSystemVersion</key>
     <string>13.0</string>
     <key>LSUIElement</key>

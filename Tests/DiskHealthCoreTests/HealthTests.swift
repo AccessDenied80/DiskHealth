@@ -22,7 +22,7 @@ import Testing
         var d = try nvme(); d.wearPercent = 90
         let r = HealthEvaluator.evaluate(d, t)
         #expect(r.level == .critical)
-        #expect(r.reasons.contains("Знос 90%"))
+        #expect(r.reasons.contains("Wear 90%"))
     }
 
     @Test func smartFailed() throws {
@@ -46,7 +46,7 @@ import Testing
         var d = try nvme(); d.temperatureC = 60
         let r = HealthEvaluator.evaluate(d, t)
         #expect(r.level == .warning)
-        #expect(r.reasons.contains("Температура 60 °C"))
+        #expect(r.reasons.contains("Temperature 60 °C"))
     }
 
     @Test func pendingSectors() throws {
@@ -58,7 +58,7 @@ import Testing
         let d = try SmartParser.parseDisk(fixture("usb_nosmart"))
         let r = HealthEvaluator.evaluate(d, t)
         #expect(r.level == .unknown)
-        #expect(r.reasons.contains("SMART недоступний"))
+        #expect(r.reasons.contains("SMART unavailable"))
         #expect(r.healthPercent == nil)
     }
 

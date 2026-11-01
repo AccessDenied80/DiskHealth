@@ -13,10 +13,10 @@ struct DiskListView: View {
             } else {
                 header
                 Divider()
-                content
+                FittedScrollView(maxHeight: 520) { content }
             }
         }
-        .frame(width: 400, height: 540)
+        .frame(width: 400)
         .onChange(of: model.disks) { disks in
             // Оновлюємо відкриті деталі новими даними.
             if let s = selected { selected = disks.first { $0.id == s.id } }
@@ -28,7 +28,7 @@ struct DiskListView: View {
             Circle().fill(model.overall.color).frame(width: 10, height: 10)
             VStack(alignment: .leading, spacing: 2) {
                 Text(model.overall.title).font(.headline)
-                Text(updatedText).font(.caption).foregroundStyle(.secondary)
+                updatedText.font(.caption).foregroundStyle(.secondary)
             }
             Spacer()
             Button {
@@ -42,12 +42,12 @@ struct DiskListView: View {
             }
             .buttonStyle(.borderless)
             .disabled(model.isRefreshing)
-            .help("Оновити зараз")
+            .help("Refresh now")
 
             Menu {
-                Button("Налаштування…") { openSettings() }
+                Button("Settings…") { SettingsWindow.show(settings: settings) }
                 Divider()
-                Button("Вийти") { NSApp.terminate(nil) }
+                Button("Quit DiskHealth") { NSApp.terminate(nil) }
             } label: {
                 Image(systemName: "gearshape")
             }
@@ -58,37 +58,32 @@ struct DiskListView: View {
         .padding(12)
     }
 
-    @ViewBuilder private var content: some View {
-        ScrollView {
-            VStack(spacing: 8) {
-                ForEach(model.errors, id: \.self) { error in
-                    Label(error, systemImage: "exclamationmark.bubble")
-                        .font(.caption)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(8)
-                        .background(Color.orange.opacity(0.15), in: RoundedRectangle(cornerRadius: 8))
-                }
-                if model.disks.isEmpty && model.errors.isEmpty {
-                    Text(model.isRefreshing ? "Опитую диски…" : "Дисків не знайдено")
-                        .foregroundStyle(.secondary)
-                        .padding(.top, 40)
-                }
-                ForEach(model.disks) { disk in
-                    DiskCardView(disk: disk, report: model.reports[disk.id])
-                        .contentShape(Rectangle())
-                        .onTapGesture { selected = disk }
-                }
+    /// Вміст без ScrollView — його рендерить і `--snapshot`.
+    var content: some View {
+        VStack(spacing: 8) {
+            ForEach(model.errors, id: \.self) { error in
+                Label(error, systemImage: "exclamationmark.bubble")
+                    .font(.caption)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(8)
+                    .background(Color.orange.opacity(0.15), in: RoundedRectangle(cornerRadius: 8))
             }
-            .padding(12)
+            if model.disks.isEmpty && model.errors.isEmpty {
+                Text(model.isRefreshing ? "Reading disks…" : "No disks found")
+                    .foregroundStyle(.secondary)
+                    .padding(.vertical, 24)
+            }
+            ForEach(model.disks) { disk in
+                DiskCardView(disk: disk, report: model.reports[disk.id])
+                    .contentShape(Rectangle())
+                    .onTapGesture { selected = disk }
+            }
         }
+        .padding(12)
     }
 
-    private var updatedText: String {
-        guard let d = model.lastUpdate else { return "Ще не оновлювалось" }
-        return "Оновлено о " + d.formatted(date: .omitted, time: .shortened)
-    }
-
-    private func openSettings() {
-        SettingsWindow.show(settings: settings)
+    private var updatedText: Text {
+        guard let d = model.lastUpdate else { return Text("Not updated yet") }
+        return Text("Updated at \(d.formatted(date: .omitted, time: .shortened))")
     }
 }

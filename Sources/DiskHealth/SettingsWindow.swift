@@ -18,7 +18,7 @@ enum SettingsWindow {
         let hosting = NSHostingController(rootView: SettingsView().environmentObject(settings))
         hosting.sizingOptions = [.preferredContentSize]
         let w = NSWindow(contentViewController: hosting)
-        w.title = "Налаштування DiskHealth"
+        w.title = String(localized: "DiskHealth Settings")
         w.styleMask = [.titled, .closable]
         w.isReleasedWhenClosed = false
         // Без явного розміру вікно з'являється 1×0, доки SwiftUI не перерахує макет.

@@ -79,3 +79,20 @@ import Testing
         #expect(AlertEngine.diff(disks: [disk(wear: 85, crc: 1)], thresholds: t, state: &back).isEmpty)
     }
 }
+
+@Suite struct AlertTextTests {
+    @Test func wearAlertBodyIsEnglishByDefault() {
+        var s = AlertState()
+        let d = DiskInfo(id: "SN1", deviceName: "/dev/disk0", deviceType: "nvme", model: "Test SSD",
+                         smartAvailable: true, smartPassed: true, wearPercent: 85)
+        let a = AlertEngine.diff(disks: [d], thresholds: Thresholds(), state: &s)
+        #expect(a.first?.body == "Wear reached 85% (threshold 80%).")
+    }
+
+    @Test func counterAlertBody() {
+        var s = AlertState()
+        let d = DiskInfo(id: "SN1", deviceName: "/dev/disk0", deviceType: "sat", model: "Test SSD",
+                         smartAvailable: true, smartPassed: true, pendingSectors: 2)
+        #expect(AlertEngine.diff(disks: [d], thresholds: Thresholds(), state: &s).first?.body == "Pending sectors: 2.")
+    }
+}

@@ -1,0 +1,90 @@
+/* DiskHealth — українська. Ключі — англійські рядки з коду; %lld — ціле число, %@ — текст, %% — знак відсотка. */
+
+/* Загальний стан */
+"Unknown" = "Невідомо";
+"All good" = "Усе гаразд";
+"Needs attention" = "Потребує уваги";
+"Critical" = "Критичний стан";
+
+/* Список дисків */
+"Refresh now" = "Оновити зараз";
+"Settings…" = "Налаштування…";
+"Quit DiskHealth" = "Вийти з DiskHealth";
+"Reading disks…" = "Опитую диски…";
+"No disks found" = "Дисків не знайдено";
+"Not updated yet" = "Ще не оновлювалось";
+"Updated at %@" = "Оновлено о %@";
+"SMART %@ · the USB bridge reports no detailed data" = "SMART %@ · міст USB не передає детальних показників";
+"%@ h" = "%@ год";
+
+/* Деталі диска */
+"Back" = "Назад";
+"Health %lld%%" = "Здоров'я %lld%%";
+"Attributes" = "Показники";
+"Device" = "Пристрій";
+"Serial number" = "Серійний номер";
+"Firmware" = "Прошивка";
+"Capacity" = "Обсяг";
+"SMART" = "SMART";
+"unavailable" = "недоступний";
+"Wear" = "Знос";
+"Available spare" = "Резерв";
+"Temperature" = "Температура";
+"Data written" = "Записано";
+"Data read" = "Прочитано";
+"Power-on time" = "Час роботи";
+"Power cycles" = "Увімкнень";
+"Unsafe shutdowns" = "Аварійні вимкнення";
+"Critical warning" = "Critical warning";
+"Media errors" = "Помилки носія";
+"Reallocated sectors" = "Перепризначені сектори";
+"Pending sectors" = "Нестабільні сектори";
+"CRC errors" = "Помилки CRC";
+"Wear, %" = "Знос, %";
+"Temperature, °C" = "Температура, °C";
+"Date" = "Дата";
+"Charts will appear after a few readings." = "Графіки з'являться після кількох опитувань.";
+"smartctl messages" = "Повідомлення smartctl";
+"%lld h (≈ %lld days)" = "%lld год (≈ %lld дн)";
+
+/* Налаштування */
+"DiskHealth Settings" = "Налаштування DiskHealth";
+"Polling" = "Опитування";
+"Interval" = "Інтервал";
+"5 min" = "5 хв";
+"15 min" = "15 хв";
+"30 min" = "30 хв";
+"1 hour" = "1 год";
+"3 hours" = "3 год";
+"Launch at login" = "Запускати при вході в систему";
+"Warning thresholds" = "Пороги попереджень";
+"Wear — warning: %lld%%" = "Знос — увага: %lld%%";
+"Wear — critical: %lld%%" = "Знос — критично: %lld%%";
+"Temperature: %lld °C" = "Температура: %lld °C";
+"Notifications" = "Сповіщення";
+"Show system notifications" = "Показувати системні сповіщення";
+
+/* Причини стану */
+"SMART unavailable" = "SMART недоступний";
+"SMART: FAILED" = "SMART: FAILED";
+"NVMe critical warning: %lld" = "NVMe critical warning: %lld";
+"Media errors: %lld" = "Помилки носія: %lld";
+"Wear %lld%%" = "Знос %lld%%";
+"Temperature %lld °C" = "Температура %lld °C";
+"Reallocated sectors: %lld" = "Перепризначені сектори: %lld";
+"Pending sectors: %lld" = "Нестабільні сектори: %lld";
+"CRC errors: %lld" = "Помилки CRC: %lld";
+
+/* Сповіщення */
+"SMART status: FAILED. Back up your data now." = "SMART-статус: FAILED. Терміново зробіть резервну копію.";
+"NVMe critical warning: %lld." = "NVMe critical warning: %lld.";
+"Wear reached %lld%% (threshold %lld%%)." = "Знос досяг %lld%% (поріг %lld%%).";
+"Wear reached %lld%% (critical threshold %lld%%)." = "Знос досяг %lld%% (критичний поріг %lld%%).";
+"Temperature %lld °C (threshold %lld °C)." = "Температура %lld °C (поріг %lld °C).";
+
+/* Помилки smartctl */
+"Unknown disk" = "Невідомий диск";
+"no device description in smartctl output" = "у відповіді smartctl немає опису пристрою";
+"smartctl not found: %@" = "smartctl не знайдено: %@";
+"%@: smartctl returned no data (code %lld)" = "%@: smartctl не повернув даних (код %lld)";
+"Invalid smartctl output: %@" = "Некоректна відповідь smartctl: %@";
