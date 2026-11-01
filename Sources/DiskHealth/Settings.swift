@@ -25,7 +25,7 @@ final class AppSettings: ObservableObject {
             do {
                 if newValue { try SMAppService.mainApp.register() } else { try SMAppService.mainApp.unregister() }
             } catch {
-                NSLog("DiskHealth: launch at login change failed: \(error)")
+                NSLog("DiskHealth: launch at login change failed: %@", String(describing: error))
             }
         }
     }

@@ -35,12 +35,14 @@ final class AppModel: ObservableObject {
     func start() {
         Notifier.requestAuthorization()
         scheduleTimer()
-        // Перезапускаємо таймер і перераховуємо стан, коли змінюються налаштування.
+        // Перезапускаємо таймер, перераховуємо стан і перевіряємо пороги на вже зчитаних даних,
+        // щоб нове попередження прийшло одразу, а не з наступним опитуванням.
         settings.objectWillChange
             .debounce(for: .seconds(1), scheduler: RunLoop.main)
             .sink { [weak self] _ in
                 self?.scheduleTimer()
                 self?.reevaluate()
+                self?.checkAlerts()
             }
             .store(in: &cancellables)
         watcher = DiskWatcher { [weak self] in
@@ -63,6 +65,11 @@ final class AppModel: ObservableObject {
         history.append(disks, at: Date())
         try? history.save()
 
+        checkAlerts()
+    }
+
+    private func checkAlerts() {
+        guard lastUpdate != nil else { return }
         let alerts = AlertEngine.diff(disks: disks, thresholds: settings.thresholds, state: &alertState)
         if settings.notificationsEnabled { Notifier.post(alerts) }
         saveAlertState()
@@ -87,7 +94,7 @@ final class AppModel: ObservableObject {
             try FileManager.default.createDirectory(at: alertStateURL.deletingLastPathComponent(), withIntermediateDirectories: true)
             try JSONEncoder().encode(alertState).write(to: alertStateURL, options: .atomic)
         } catch {
-            NSLog("DiskHealth: cannot save alert state: \(error)")
+            NSLog("DiskHealth: cannot save alert state: %@", String(describing: error))
         }
     }
 }
