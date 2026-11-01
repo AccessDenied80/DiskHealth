@@ -30,6 +30,10 @@ public enum AlertEngine {
                 ("wear\(t.wearCritical)", (d.wearPercent ?? 0) >= t.wearCritical, true, "Знос досяг \(d.wearPercent ?? 0)% (критичний поріг \(t.wearCritical)%)."),
                 ("temp", (d.temperatureC ?? 0) >= t.temperatureWarning, false, "Температура \(d.temperatureC ?? 0) °C (поріг \(t.temperatureWarning) °C)."),
             ]
+            // Ключі зносу містять поріг: після зміни порогів старі ключі прибираємо, інакше вони «залипнуть».
+            let currentKeys = Set(conditions.map { "\(d.id)|\($0.key)" })
+            state.active = state.active.filter { !$0.hasPrefix("\(d.id)|wear") || currentKeys.contains($0) }
+
             for c in conditions {
                 let key = "\(d.id)|\(c.key)"
                 if c.on {

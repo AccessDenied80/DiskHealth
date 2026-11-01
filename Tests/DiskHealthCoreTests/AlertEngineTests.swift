@@ -33,6 +33,15 @@ import Testing
         #expect(a.filter(\.critical).count == 1)
     }
 
+    @Test func changedThresholdDropsStaleKeys() {
+        var s = AlertState()
+        var custom = Thresholds(); custom.wearWarning = 70
+        _ = AlertEngine.diff(disks: [disk(wear: 85)], thresholds: t, state: &s)       // wear80 активний
+        _ = AlertEngine.diff(disks: [disk(wear: 85)], thresholds: custom, state: &s)  // поріг змінено
+        #expect(!s.active.contains("SN1|wear80"))
+        #expect(s.active.contains("SN1|wear70"))
+    }
+
     @Test func counterIncreaseFires() {
         var s = AlertState()
         #expect(AlertEngine.diff(disks: [disk(crc: 0)], thresholds: t, state: &s).isEmpty)
