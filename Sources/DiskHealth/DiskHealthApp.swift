@@ -31,10 +31,5 @@ struct DiskHealthApp: App {
                 .foregroundStyle(model.overall >= .warning ? model.overall.color : .primary)
         }
         .menuBarExtraStyle(.window)
-
-        Settings {
-            SettingsView()
-                .environmentObject(settings)
-        }
     }
 }

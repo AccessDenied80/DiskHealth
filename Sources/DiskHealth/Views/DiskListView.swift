@@ -3,6 +3,7 @@ import SwiftUI
 
 struct DiskListView: View {
     @EnvironmentObject private var model: AppModel
+    @EnvironmentObject private var settings: AppSettings
     @State private var selected: DiskInfo?
 
     var body: some View {
@@ -88,11 +89,6 @@ struct DiskListView: View {
     }
 
     private func openSettings() {
-        NSApp.activate(ignoringOtherApps: true)
-        if #available(macOS 14, *) {
-            NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
-        } else {
-            NSApp.sendAction(Selector(("showPreferencesWindow:")), to: nil, from: nil)
-        }
+        SettingsWindow.show(settings: settings)
     }
 }
