@@ -30,6 +30,11 @@ struct DiskDetailView: View {
             Spacer()
             Text(disk.model).font(.headline).lineLimit(1)
             Spacer()
+
+            Button { MenuBarWindow.close() } label: { Image(systemName: "xmark.circle.fill") }
+                .buttonStyle(.borderless)
+                .foregroundStyle(.secondary)
+                .help("Close")
         }
         .padding(12)
     }

@@ -8,6 +8,7 @@
 
 /* Список дисків */
 "Refresh now" = "Оновити зараз";
+"Close" = "Закрити";
 "Settings…" = "Налаштування…";
 "Quit DiskHealth" = "Вийти з DiskHealth";
 "Reading disks…" = "Опитую диски…";

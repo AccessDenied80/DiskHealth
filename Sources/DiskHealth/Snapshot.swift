@@ -16,6 +16,7 @@ enum Snapshot {
     static func run(model: AppModel, settings: AppSettings, to dir: URL) {
         Task { @MainActor in
             await model.refresh()
+            NSLog("DiskHealth snapshot: menu bar close button available = %@", String(MenuBarWindow.canClose))
             try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
             await writeWindow(host(DiskListView().environmentObject(model).environmentObject(settings)), "list", dir)
             for (i, disk) in model.disks.enumerated() {

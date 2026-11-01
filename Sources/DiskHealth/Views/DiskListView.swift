@@ -54,6 +54,11 @@ struct DiskListView: View {
             .menuStyle(.borderlessButton)
             .menuIndicator(.hidden)
             .fixedSize()
+
+            Button { MenuBarWindow.close() } label: { Image(systemName: "xmark.circle.fill") }
+                .buttonStyle(.borderless)
+                .foregroundStyle(.secondary)
+                .help("Close")
         }
         .padding(12)
     }
