@@ -7,7 +7,7 @@ in the spirit of SSD Reporter. It reads S.M.A.R.T. data through a bundled
 [`smartctl`](https://www.smartmontools.org/), shows wear, temperature, data written and error counters
 with history charts, and sends a macOS notification when a drive starts to degrade.
 
-> The user interface is in Ukrainian. Опис українською — [нижче](#українською).
+> Available in English and Ukrainian (follows the macOS language). Опис українською — [нижче](#українською).
 
 ## Features
 
@@ -68,6 +68,7 @@ see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 **DiskHealth** — застосунок у рядку меню macOS для моніторингу стану дисків (на кшталт SSD Reporter).
 Показує SMART-статус, знос, температуру, обсяг записаних даних, лічильники помилок та історію,
 і надсилає сповіщення, коли диск починає деградувати.
+Інтерфейс — українською або англійською, залежно від мови macOS.
 
 **Встановлення.** Завантажте `DiskHealth-<версія>.dmg` з [Releases](../../releases) і перетягніть
 застосунок у «Програми». Застосунок не нотаризований Apple, тому під час першого запуску відкрийте
