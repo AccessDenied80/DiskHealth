@@ -28,7 +28,7 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .frame(width: 420)
-        .padding(.vertical, 8)
+        // Згрупована Form не має власної висоти: без явного розміру вікно стискається до нуля.
+        .frame(width: 460, height: 440)
     }
 }

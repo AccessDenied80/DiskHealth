@@ -32,9 +32,21 @@ enum Snapshot {
                     "detail", dir
                 )
             }
-            write(SettingsView().environmentObject(settings), "settings", dir)
+            writeWindow(SettingsWindow.make(settings: settings), "settings", dir)
             exit(0)
         }
+    }
+
+    /// Рендер справжнього вікна AppKit — так видно Form і контроли, які ImageRenderer не малює.
+    @MainActor
+    private static func writeWindow(_ window: NSWindow, _ name: String, _ dir: URL) {
+        guard let view = window.contentView else { return }
+        view.layoutSubtreeIfNeeded()
+        NSLog("DiskHealth snapshot \(name): window content size \(view.bounds.size)")
+        guard view.bounds.width > 0, view.bounds.height > 0,
+              let rep = view.bitmapImageRepForCachingDisplay(in: view.bounds) else { return }
+        view.cacheDisplay(in: view.bounds, to: rep)
+        try? rep.representation(using: .png, properties: [:])?.write(to: dir.appendingPathComponent("\(name).png"))
     }
 
     @MainActor
