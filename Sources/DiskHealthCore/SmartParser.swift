@@ -14,7 +14,9 @@ public enum SmartParser {
 
     public static func parseDisk(_ data: Data) throws -> DiskInfo {
         let r = try JSONDecoder().decode(RawDisk.self, from: data)
-        let name = r.device?.name ?? "?"
+        guard let name = r.device?.name else {
+            throw SmartctlError.badOutput("у відповіді smartctl немає опису пристрою")
+        }
         let nvme = r.nvme_smart_health_information_log
         let attrs = Dictionary(
             (r.ata_smart_attributes?.table ?? []).map { ($0.id, $0) },

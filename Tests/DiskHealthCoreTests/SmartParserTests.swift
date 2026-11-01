@@ -58,6 +58,10 @@ import Testing
         #expect(devs[1] == ScannedDevice(name: "/dev/disk4", type: "sat", proto: "ATA"))
     }
 
+    @Test func jsonWithoutDeviceThrows() {
+        #expect(throws: SmartctlError.self) { try SmartParser.parseDisk(fixture("scan")) }
+    }
+
     @Test func garbageThrows() {
         #expect(throws: (any Error).self) { try SmartParser.parseDisk(Data("not json".utf8)) }
     }
