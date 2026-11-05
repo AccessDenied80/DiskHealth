@@ -91,3 +91,15 @@
 "smartctl not found: %@" = "smartctl не знайдено: %@";
 "%@: smartctl returned no data (code %lld)" = "%@: smartctl не повернув даних (код %lld)";
 "Invalid smartctl output: %@" = "Некоректна відповідь smartctl: %@";
+
+/* Зовнішні диски */
+"Unmount" = "Розмонтувати";
+"Mount" = "Змонтувати";
+"Volumes" = "Томи";
+"External disk" = "Зовнішній диск";
+"Unmounted. Safe to disconnect." = "Розмонтовано. Можна від'єднувати.";
+"No volumes" = "Немає томів";
+"Could not unmount. Close the apps using this disk. %@" = "Не вдалося розмонтувати. Закрийте застосунки, що використовують цей диск. %@";
+"Could not mount. %@" = "Не вдалося змонтувати. %@";
+"diskutil not found: %@" = "diskutil не знайдено: %@";
+"Invalid diskutil output" = "Некоректна відповідь diskutil";

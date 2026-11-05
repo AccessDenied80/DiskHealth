@@ -73,16 +73,17 @@ struct DiskListView: View {
                     .padding(8)
                     .background(Color.orange.opacity(0.15), in: RoundedRectangle(cornerRadius: 8))
             }
-            if model.disks.isEmpty && model.errors.isEmpty {
+            if model.disks.isEmpty && model.errors.isEmpty && model.externalDisks.isEmpty {
                 Text(model.isRefreshing ? "Reading disks…" : "No disks found")
                     .foregroundStyle(.secondary)
                     .padding(.vertical, 24)
             }
             ForEach(model.disks) { disk in
-                DiskCardView(disk: disk, report: model.reports[disk.id])
+                DiskCardView(disk: disk, report: model.reports[disk.id], external: model.external(for: disk))
                     .contentShape(Rectangle())
                     .onTapGesture { selected = disk }
             }
+            ForEach(model.externalWithoutSmart) { ExternalDiskCardView(disk: $0) }
         }
         .padding(12)
     }

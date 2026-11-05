@@ -9,10 +9,16 @@ final class AppModel: ObservableObject {
     @Published private(set) var errors: [String] = []
     @Published private(set) var lastUpdate: Date?
     @Published private(set) var isRefreshing = false
+    @Published private(set) var externalDisks: [ExternalDisk] = []
+    /// Диски, для яких зараз виконується монтування чи розмонтування.
+    @Published private(set) var busyDisks: Set<String> = []
+    /// Остання помилка монтування за диском.
+    @Published private(set) var mountErrors: [String: String] = [:]
 
     let settings: AppSettings
     let history: HistoryStore
     private let runner = SmartctlRunner.bundled()
+    private let diskutil = DiskutilRunner()
     private let alertStateURL: URL
     private var alertState: AlertState
     private var timer: Timer?
@@ -20,6 +26,15 @@ final class AppModel: ObservableObject {
     private var cancellables: Set<AnyCancellable> = []
 
     var overall: HealthLevel { HealthLevel.overall(disks.map { reports[$0.id]?.level ?? .unknown }) }
+
+    func external(for disk: DiskInfo) -> ExternalDisk? {
+        externalDisks.first { "/dev/\($0.id)" == disk.deviceName }
+    }
+
+    /// Зовнішні диски, яких не бачить `smartctl` (наприклад, флешки): їх теж має бути чим розмонтувати.
+    var externalWithoutSmart: [ExternalDisk] {
+        externalDisks.filter { ext in !disks.contains { $0.deviceName == "/dev/\(ext.id)" } }
+    }
 
     init(settings: AppSettings) {
         self.settings = settings
@@ -45,9 +60,11 @@ final class AppModel: ObservableObject {
                 self?.checkAlerts()
             }
             .store(in: &cancellables)
-        watcher = DiskWatcher { [weak self] in
+        watcher = DiskWatcher(onChange: { [weak self] in
             Task { @MainActor in await self?.refresh() }
-        }
+        }, onVolumesChange: { [weak self] in
+            Task { @MainActor in await self?.refreshExternal() }
+        })
         Task { await refresh() }
     }
 
@@ -56,6 +73,8 @@ final class AppModel: ObservableObject {
         isRefreshing = true
         defer { isRefreshing = false }
 
+        // Спершу швидкий список томів: SMART сплячого USB-диска може читатися довго, а кнопка потрібна одразу.
+        await refreshExternal()
         let result = await runner.readAll()
         disks = result.disks.sorted { $0.deviceName.localizedStandardCompare($1.deviceName) == .orderedAscending }
         errors = result.errors
@@ -66,6 +85,34 @@ final class AppModel: ObservableObject {
         try? history.save()
 
         checkAlerts()
+    }
+
+    func refreshExternal() async {
+        do {
+            externalDisks = try await diskutil.list()
+        } catch {
+            NSLog("DiskHealth: cannot list external disks: %@", String(describing: error))
+        }
+    }
+
+    /// Розмонтовує змонтований диск або монтує розмонтований.
+    func toggleMount(_ disk: ExternalDisk) async {
+        guard busyDisks.insert(disk.id).inserted else { return }
+        defer { busyDisks.remove(disk.id) }
+        mountErrors[disk.id] = nil
+        do {
+            if disk.isMounted {
+                try await diskutil.unmount(disk)
+            } else {
+                try await diskutil.mount(disk)
+            }
+        } catch {
+            let reason = error.localizedDescription
+            mountErrors[disk.id] = disk.isMounted
+                ? String(localized: "Could not unmount. Close the apps using this disk. \(reason)")
+                : String(localized: "Could not mount. \(reason)")
+        }
+        await refreshExternal()
     }
 
     private func checkAlerts() {

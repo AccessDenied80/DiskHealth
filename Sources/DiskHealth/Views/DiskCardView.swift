@@ -4,6 +4,7 @@ import SwiftUI
 struct DiskCardView: View {
     let disk: DiskInfo
     let report: HealthReport?
+    var external: ExternalDisk?
 
     private var level: HealthLevel { report?.level ?? .unknown }
 
@@ -47,6 +48,11 @@ struct DiskCardView: View {
                 Text(reasons.joined(separator: " · "))
                     .font(.caption)
                     .foregroundStyle(level == .unknown ? .secondary : level.color)
+            }
+
+            if let external {
+                Divider()
+                ExternalDiskControls(disk: external)
             }
         }
         .padding(10)

@@ -43,6 +43,9 @@ struct DiskDetailView: View {
         VStack(alignment: .leading, spacing: 14) {
             status
             attributes
+            if let external = model.external(for: disk) {
+                section("Volumes") { ExternalDiskControls(disk: external) }
+            }
             charts
             if settings.showSmartctlMessages && !disk.messages.isEmpty {
                 section("smartctl messages") {
