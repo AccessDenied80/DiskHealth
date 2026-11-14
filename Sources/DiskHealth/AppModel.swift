@@ -14,6 +14,8 @@ final class AppModel: ObservableObject {
     @Published private(set) var busyDisks: Set<String> = []
     /// Остання помилка монтування за диском.
     @Published private(set) var mountErrors: [String: String] = [:]
+    /// Заповненість за BSD-ім'ям цілого диска (`disk0`).
+    @Published private(set) var spaces: [String: DiskSpace] = [:]
 
     let settings: AppSettings
     let history: HistoryStore
@@ -29,6 +31,10 @@ final class AppModel: ObservableObject {
 
     func external(for disk: DiskInfo) -> ExternalDisk? {
         externalDisks.first { "/dev/\($0.id)" == disk.deviceName }
+    }
+
+    func space(for disk: DiskInfo) -> DiskSpace? {
+        spaces[disk.deviceName.replacingOccurrences(of: "/dev/", with: "")]
     }
 
     /// Зовнішні диски, яких не бачить `smartctl` (наприклад, флешки): їх теж має бути чим розмонтувати.
@@ -84,7 +90,7 @@ final class AppModel: ObservableObject {
         history.append(disks, at: Date())
         try? history.save()
 
-        checkAlerts()
+        await refreshSpace()
     }
 
     func refreshExternal() async {
@@ -93,6 +99,30 @@ final class AppModel: ObservableObject {
         } catch {
             NSLog("DiskHealth: cannot list external disks: %@", String(describing: error))
         }
+        await refreshSpace()
+    }
+
+    /// Перераховує заповненість усіх відомих дисків і перевіряє поріг.
+    func refreshSpace() async {
+        let ids = Set(disks.map { $0.deviceName.replacingOccurrences(of: "/dev/", with: "") } + externalDisks.map(\.id))
+        guard let list = try? await diskutil.listAll() else { return }
+        var result: [String: DiskSpace] = [:]
+        for id in ids where id.hasPrefix("disk") {
+            guard let groups = try? DiskSpaceCalculator.mountGroups(diskutilList: list, wholeDisk: id) else { continue }
+            result[id] = DiskSpaceCalculator.combine(groups.map { $0.compactMap(Self.capacity) })
+        }
+        spaces = result
+        checkAlerts()
+    }
+
+    /// Як у Finder: доступним вважається й місце, яке macOS звільнить сама (кеші, локальні знімки).
+    nonisolated private static func capacity(at mountPoint: String) -> VolumeCapacity? {
+        let keys: Set<URLResourceKey> = [.volumeTotalCapacityKey, .volumeAvailableCapacityForImportantUsageKey, .volumeAvailableCapacityKey]
+        guard let v = try? URL(fileURLWithPath: mountPoint).resourceValues(forKeys: keys),
+              let total = v.volumeTotalCapacity
+        else { return nil }
+        let available = v.volumeAvailableCapacityForImportantUsage ?? v.volumeAvailableCapacity.map(Int64.init) ?? 0
+        return VolumeCapacity(totalBytes: Int64(total), availableBytes: available)
     }
 
     /// Розмонтовує змонтований диск або монтує розмонтований.
@@ -117,7 +147,15 @@ final class AppModel: ObservableObject {
 
     private func checkAlerts() {
         guard lastUpdate != nil else { return }
-        let alerts = AlertEngine.diff(disks: disks, thresholds: settings.thresholds, state: &alertState)
+        let t = settings.thresholds
+        var alerts = AlertEngine.diff(disks: disks, thresholds: t, state: &alertState)
+        // Ключ за серійним номером, а не за BSD-ім'ям: те змінюється після перепідключення.
+        let spaceItems = disks.compactMap { d in space(for: d).map { SpaceAlertItem(id: d.id, name: d.model, space: $0) } }
+            + externalWithoutSmart.compactMap { e in
+                let name = e.volumes.first?.name ?? e.id
+                return spaces[e.id].map { SpaceAlertItem(id: "volume:\(name)", name: name, space: $0) }
+            }
+        alerts += AlertEngine.diffSpace(spaceItems, thresholds: t, state: &alertState)
         if settings.notificationsEnabled { Notifier.post(alerts) }
         saveAlertState()
     }

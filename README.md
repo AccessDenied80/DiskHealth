@@ -17,6 +17,7 @@ with history charts, and sends a macOS notification when a drive starts to degra
 - Notifications, once per event: SMART FAILED, NVMe critical warning, wear ≥ 80 % / 90 %, temperature ≥ 60 °C, growing error counters. All thresholds are configurable.
 - History (365 days) with wear and temperature charts.
 - Polls every 30 minutes by default, and right away when a drive is connected.
+- How full each drive is (free space counted the way Finder does), with a configurable warning threshold — 90 % by default.
 - Unmount and mount external drives from the menu bar, including drives without SMART data such as flash drives. Busy drives are never force-unmounted: macOS refuses and the app shows which process holds the drive.
 - No admin password, no extra installs — `smartctl` lives inside the app.
 
@@ -70,6 +71,7 @@ see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 Показує SMART-статус, знос, температуру, обсяг записаних даних, лічильники помилок та історію,
 і надсилає сповіщення, коли диск починає деградувати.
 Інтерфейс — українською або англійською, залежно від мови macOS.
+Показує, наскільки заповнений кожен диск, і попереджає, коли заповнення сягає порогу (90 % за замовчуванням).
 Зовнішні диски можна розмонтовувати й монтувати прямо з рядка меню; зайнятий диск застосунок примусово не розмонтовує.
 
 **Встановлення.** Завантажте `DiskHealth-<версія>.dmg` з [Releases](../../releases) і перетягніть

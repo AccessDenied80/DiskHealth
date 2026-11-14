@@ -5,6 +5,8 @@ struct DiskCardView: View {
     let disk: DiskInfo
     let report: HealthReport?
     var external: ExternalDisk?
+    var space: DiskSpace?
+    var fullWarning = 90
 
     private var level: HealthLevel { report?.level ?? .unknown }
 
@@ -42,6 +44,10 @@ struct DiskCardView: View {
                     stat("square.and.arrow.down", Format.bytes(disk.bytesWritten))
                     stat("clock", String(localized: "\(Format.number(disk.powerOnHours)) h"))
                 }
+            }
+
+            if let space {
+                SpaceBar(space: space, fullWarning: fullWarning)
             }
 
             if let reasons = report?.reasons, !reasons.isEmpty {

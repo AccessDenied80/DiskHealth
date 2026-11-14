@@ -43,6 +43,9 @@ struct DiskDetailView: View {
         VStack(alignment: .leading, spacing: 14) {
             status
             attributes
+            if let space = model.space(for: disk) {
+                section("Space") { SpaceBar(space: space, fullWarning: settings.fullWarning) }
+            }
             if let external = model.external(for: disk) {
                 section("Volumes") { ExternalDiskControls(disk: external) }
             }

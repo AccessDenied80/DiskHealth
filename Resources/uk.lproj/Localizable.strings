@@ -103,3 +103,9 @@
 "Could not mount. %@" = "Не вдалося змонтувати. %@";
 "diskutil not found: %@" = "diskutil не знайдено: %@";
 "Invalid diskutil output" = "Некоректна відповідь diskutil";
+
+/* Заповненість */
+"Space" = "Місце";
+"%lld%% full · %@ free of %@" = "Заповнено %lld%% · вільно %@ з %@";
+"Disk full: %lld%%" = "Заповнення диска: %lld%%";
+"Disk is %lld%% full (threshold %lld%%). %@ available." = "Диск заповнено на %lld%% (поріг %lld%%). Вільно %@.";

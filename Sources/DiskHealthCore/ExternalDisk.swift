@@ -100,6 +100,11 @@ public struct DiskutilRunner: Sendable {
         self.executable = executable
     }
 
+    /// Повний `diskutil list -plist` (усі диски, включно з внутрішніми) — для розрахунку заповненості.
+    public func listAll() async throws -> Data {
+        try await run(["list", "-plist"])
+    }
+
     public func list() async throws -> [ExternalDisk] {
         let all = try await run(["list", "-plist", "external"])
         let physical = try await run(["list", "-plist", "external", "physical"])

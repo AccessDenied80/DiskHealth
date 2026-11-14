@@ -45,6 +45,8 @@ struct ExternalDiskControls: View {
 /// Картка зовнішнього диска, для якого немає даних SMART: `smartctl` його не бачить.
 struct ExternalDiskCardView: View {
     let disk: ExternalDisk
+    var space: DiskSpace?
+    var fullWarning = 90
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -59,6 +61,9 @@ struct ExternalDiskCardView: View {
                     Text("SMART unavailable").font(.caption).foregroundStyle(.secondary)
                 }
                 Spacer()
+            }
+            if let space {
+                SpaceBar(space: space, fullWarning: fullWarning)
             }
             Divider()
             ExternalDiskControls(disk: disk)

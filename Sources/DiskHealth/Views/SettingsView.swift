@@ -22,6 +22,7 @@ struct SettingsView: View {
                 Stepper("Wear — warning: \(settings.wearWarning)%", value: $settings.wearWarning, in: 10...100, step: 5)
                 Stepper("Wear — critical: \(settings.wearCritical)%", value: $settings.wearCritical, in: 10...100, step: 5)
                 Stepper("Temperature: \(settings.temperatureWarning) °C", value: $settings.temperatureWarning, in: 40...90, step: 5)
+                Stepper("Disk full: \(settings.fullWarning)%", value: $settings.fullWarning, in: 50...99, step: 5)
             }
             Section("Notifications") {
                 Toggle("Show system notifications", isOn: $settings.notificationsEnabled)
@@ -32,6 +33,6 @@ struct SettingsView: View {
         }
         .formStyle(.grouped)
         // Згрупована Form не має власної висоти: без явного розміру вікно стискається до нуля.
-        .frame(width: 460, height: 520)
+        .frame(width: 460, height: 560)
     }
 }

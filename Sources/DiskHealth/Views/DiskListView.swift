@@ -79,11 +79,14 @@ struct DiskListView: View {
                     .padding(.vertical, 24)
             }
             ForEach(model.disks) { disk in
-                DiskCardView(disk: disk, report: model.reports[disk.id], external: model.external(for: disk))
+                DiskCardView(disk: disk, report: model.reports[disk.id], external: model.external(for: disk),
+                             space: model.space(for: disk), fullWarning: settings.fullWarning)
                     .contentShape(Rectangle())
                     .onTapGesture { selected = disk }
             }
-            ForEach(model.externalWithoutSmart) { ExternalDiskCardView(disk: $0) }
+            ForEach(model.externalWithoutSmart) {
+                ExternalDiskCardView(disk: $0, space: model.spaces[$0.id], fullWarning: settings.fullWarning)
+            }
         }
         .padding(12)
     }
